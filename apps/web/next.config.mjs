@@ -7,6 +7,7 @@ const root = path.resolve(__dirname, '../..')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   webpack: (config) => {
     // exFAT drive workaround: force CJS builds when running from monorepo root
     const socketClientPath = path.join(root, 'node_modules/socket.io-client/build/cjs/index.js')
