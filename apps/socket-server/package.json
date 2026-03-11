@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node ../../node_modules/ts-node-dev/lib/bin.js --respawn --transpile-only src/index.ts",
     "start": "node ../../node_modules/ts-node/dist/bin.js src/index.ts",
-    "build": "node ../../node_modules/typescript/bin/tsc"
+    "build": "npx tsc"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
