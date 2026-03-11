@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #16213e;
+  --foreground: #f0f0f0;
+
+  /* Exact colors from codenames.game */
+  --left-team-primary: #008ee0;
+  --right-team-primary: #ff5241;
+  --blue-gradient: linear-gradient(to bottom, #008ee0, #52b7ff);
+  --red-gradient: linear-gradient(to bottom, #ff5241, #ff833d);
+  --green-gradient: linear-gradient(to bottom, #2b9e18, #55c43a);
+  --bg-timer-blue: linear-gradient(180deg, #AEF4FF 0%, #9CF3FF 100%);
+  --bg-timer-red: linear-gradient(180deg, #FFD19D 0%, #FFB374 100%);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.timer-urgent {
+  animation: timerPulse 0.8s ease-in-out infinite;
+}

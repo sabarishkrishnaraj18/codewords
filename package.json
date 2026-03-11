@@ -1,0 +1,17 @@
+{
+  "name": "codewords",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "apps/socket-server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=apps/socket-server\"",
+    "build": "npm run build --workspace=apps/web",
+    "start": "concurrently \"npm run start --workspace=apps/web\" \"npm run start --workspace=apps/socket-server\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
