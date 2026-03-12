@@ -32,7 +32,7 @@ function PlayerAvatar({ player, team, isMe, isActiveTeam }: { player: Player; te
             ? { boxShadow: [`0 0 0 0px ${ringColor}66`, `0 0 0 4px ${ringColor}aa`, `0 0 0 0px ${ringColor}66`] }
             : { boxShadow: 'none' }}
           transition={{ repeat: Infinity, duration: 1.8 }}
-          className="w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl text-white shadow-lg"
+          className="w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl text-white shadow-lg shrink-0"
           style={{
             background: avatarGradient,
             outline: isMe ? `2px solid ${ringColor}` : 'none',
@@ -60,11 +60,11 @@ function PlayerAvatar({ player, team, isMe, isActiveTeam }: { player: Player; te
         )}
       </div>
 
-      <p className={`text-sm font-bold truncate max-w-full px-2 text-center leading-tight ${player.connected ? 'text-white' : 'text-white/35'}`}>
+      <p className={`text-base font-bold truncate max-w-full px-2 text-center leading-tight ${player.connected ? 'text-white' : 'text-white/35'}`}>
         {player.username}
       </p>
 
-      <div className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+      <div className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
         player.score > 0
           ? (isBlue ? 'bg-blue-500/25 text-blue-200' : 'bg-red-500/25 text-red-200')
           : player.score < 0
@@ -108,7 +108,7 @@ export default function TeamPanel({
     >
       {/* Header: OPERATIVES label (+ optional count) */}
       <div className="pt-3 pb-2 px-3 shrink-0 text-center" style={{ background: 'rgba(0,0,0,0.18)' }}>
-        <p className="font-display text-[9px] font-black uppercase tracking-[0.3em] text-white/60 leading-none">
+        <p className="font-display text-xs font-black uppercase tracking-[0.25em] text-white/60 leading-none">
           OPERATIVES
         </p>
         {showCount && (
@@ -175,13 +175,13 @@ export default function TeamPanel({
 
       {/* Spymasters */}
       <div className="px-2.5 pt-2 pb-2.5 shrink-0 border-t border-white/10" style={{ background: spyBgColor }}>
-        <p className="font-display text-[9px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">SPYMASTERS</p>
+        <p className="font-display text-xs font-black uppercase tracking-[0.25em] text-white/40 mb-2">SPYMASTERS</p>
         <div className="flex flex-col gap-2">
           <AnimatePresence>
             {spymasters.map((p) => (
               <motion.div key={p.userId} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                  className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
                   style={{
                     background: isBlue ? '#1b3f6a' : '#6b2018',
                     color: isBlue ? '#5ba3d4' : '#cd4d3c',
@@ -192,7 +192,7 @@ export default function TeamPanel({
                 >
                   {p.username.slice(0, 2).toUpperCase()}
                 </div>
-                <p className={`text-xs truncate flex-1 ${p.connected ? 'text-white/70' : 'text-white/22'}`}>
+                <p className={`text-sm truncate flex-1 ${p.connected ? 'text-white/80' : 'text-white/22'}`}>
                   {p.username}
                   {p.userId === myUserId && <span className="text-white/30 ml-1 text-[9px]">(you)</span>}
                 </p>

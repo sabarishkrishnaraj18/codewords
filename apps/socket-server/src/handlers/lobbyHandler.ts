@@ -132,10 +132,32 @@ export function registerLobbyHandlers(io: Server, socket: Socket): void {
     const room = getRoom(code)
     if (!room) return
 
+    // Enforce one spymaster per team
+    if (role === 'spymaster') {
+      const existing = room.gameState.players.find(
+        (p) => p.team === team && p.role === 'spymaster' && p.userId !== userId
+      )
+      if (existing) {
+        socket.emit('error', { code: 'SLOT_TAKEN', message: `${existing.username} is already ${team} spymaster` })
+        return
+      }
+    }
+
     const updatedPlayers = room.gameState.players.map((p) =>
       p.userId === userId ? { ...p, team, role } : p
     )
     updateGameState(code, { ...room.gameState, players: updatedPlayers })
     io.to(code).emit('role-updated', { userId, team, role })
+  })
+
+  socket.on('kick-player', ({ roomCode, hostUserId, targetUserId }) => {
+    const code = roomCode.toUpperCase()
+    const room = getRoom(code)
+    if (!room || room.hostUserId !== hostUserId) return
+
+    const updatedPlayers = room.gameState.players.filter((p) => p.userId !== targetUserId)
+    updateGameState(code, { ...room.gameState, players: updatedPlayers })
+    io.to(code).emit('player-kicked', { userId: targetUserId })
+    console.log(`${targetUserId} kicked from ${code} by host`)
   })
 }

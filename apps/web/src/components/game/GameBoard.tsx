@@ -9,9 +9,12 @@ interface Props {
   canGuess: boolean
   canBlindGuess: boolean
   onGuess: (index: number) => void
+  selectedCard?: number | null
+  onSelect?: (index: number) => void
+  onConfirm?: (index: number) => void
 }
 
-export default function GameBoard({ cards, isSpymaster, canGuess, canBlindGuess, onGuess }: Props) {
+export default function GameBoard({ cards, isSpymaster, canGuess, canBlindGuess, onGuess, selectedCard, onSelect, onConfirm }: Props) {
   return (
     <div className="flex flex-col gap-2 w-full max-w-3xl mx-auto">
       <AnimatePresence>
@@ -28,7 +31,7 @@ export default function GameBoard({ cards, isSpymaster, canGuess, canBlindGuess,
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="grid grid-cols-5 gap-2 w-full">
+      <div className="grid grid-cols-5 gap-2 w-full pb-4">
         {cards.map((card) => (
           <WordCard
             key={card.index}
@@ -37,6 +40,9 @@ export default function GameBoard({ cards, isSpymaster, canGuess, canBlindGuess,
             canGuess={canGuess}
             canBlindGuess={canBlindGuess}
             onGuess={onGuess}
+            isSelected={selectedCard === card.index}
+            onSelect={onSelect}
+            onConfirm={onConfirm}
           />
         ))}
       </div>

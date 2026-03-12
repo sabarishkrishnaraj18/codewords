@@ -6,6 +6,14 @@ import { getSocket } from '@/lib/socket-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { useUserStats } from '@/hooks/useUserStats'
 
+// SVG user icon — no emoji
+const UserIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="12" cy="8" r="4"/>
+    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+  </svg>
+)
+
 export default function HomePage() {
   const router = useRouter()
   const { user, loading, signOut, updateUsername, isSupabaseEnabled } = useAuth()
@@ -17,10 +25,17 @@ export default function HomePage() {
   const [busy, setBusy] = useState(false)
   const [editingName, setEditingName] = useState(false)
   const [nameInput, setNameInput] = useState('')
+  const [lastRoom, setLastRoom] = useState<string | null>(null)
 
   useEffect(() => {
     if (user && !user.username) setEditingName(true)
   }, [user])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setLastRoom(localStorage.getItem('codewords_last_room'))
+    }
+  }, [])
 
   if (loading) {
     return (
@@ -51,17 +66,17 @@ export default function HomePage() {
     }
   }
 
-  const handleJoin = () => {
+  const handleJoin = (code?: string) => {
+    const roomCode = (code ?? joinCode).toUpperCase().trim()
     if (!username.trim()) { setError('Set your name first'); return }
-    if (!joinCode.trim()) { setError('Enter a room code'); return }
+    if (!roomCode) { setError('Enter a room code'); return }
     setBusy(true)
     setError('')
     const socket = getSocket()
-    const code = joinCode.toUpperCase().trim()
     const doJoin = () => {
-      socket.once('room-joined', () => router.push(`/lobby/${code}`))
+      socket.once('room-joined', () => router.push(`/lobby/${roomCode}`))
       socket.once('error', ({ message }) => { setError(message); setBusy(false) })
-      socket.emit('join-room', { roomCode: code, userId, username: username.trim() })
+      socket.emit('join-room', { roomCode, userId, username: username.trim() })
     }
     if (socket.connected) { doJoin() }
     else {
@@ -139,12 +154,12 @@ export default function HomePage() {
         ) : isSupabaseEnabled ? (
           /* Guest with Supabase: sign-in prompt */
           <div className="bg-white/6 border border-white/12 rounded-2xl px-4 py-3 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white/8 flex items-center justify-center text-white/30 text-lg shrink-0">
-              👤
+            <div className="w-10 h-10 rounded-full bg-white/8 flex items-center justify-center shrink-0">
+              <UserIcon className="w-5 h-5 text-white/30" />
             </div>
             <div className="flex-1">
               <p className="text-white/70 text-sm font-semibold">Playing as guest</p>
-              <p className="text-white/35 text-xs">Sign in to track scores across games</p>
+              <p className="text-white/35 text-xs">Sign in to save scores across games</p>
             </div>
             <button
               onClick={() => router.push('/auth')}
@@ -158,7 +173,7 @@ export default function HomePage() {
         {/* Name field — guests only */}
         {!isLoggedIn && (
           <div className="flex items-center gap-2 bg-white/8 border border-white/15 rounded-xl px-4 py-3">
-            <span className="text-lg shrink-0">👤</span>
+            <UserIcon className="w-5 h-5 text-white/30 shrink-0" />
             {editingName ? (
               <input
                 autoFocus
@@ -192,6 +207,28 @@ export default function HomePage() {
             {error}
           </motion.p>
         )}
+
+        {/* Rejoin last room */}
+        <AnimatePresence>
+          {lastRoom && mode === 'home' && (
+            <motion.button
+              key="rejoin"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => handleJoin(lastRoom)}
+              disabled={busy}
+              className="w-full py-3 bg-white/8 hover:bg-white/14 border border-white/15 text-white/70 hover:text-white font-display font-bold text-base uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              Rejoin {lastRoom}
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         {/* Mode panels */}
         <AnimatePresence mode="wait">
@@ -244,7 +281,7 @@ export default function HomePage() {
                 className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-4 text-white placeholder-white/25 focus:outline-none focus:border-white/50 text-center font-display text-3xl tracking-[0.3em] uppercase"
               />
               <motion.button whileTap={{ scale: 0.97 }}
-                onClick={handleJoin} disabled={busy}
+                onClick={() => handleJoin()} disabled={busy}
                 className="w-full py-4 bg-[#008ee0] hover:bg-[#0077c2] active:bg-[#0077c2] text-white font-display font-bold text-xl uppercase tracking-wider rounded-xl disabled:opacity-50">
                 {busy ? 'Joining…' : 'Join Room'}
               </motion.button>

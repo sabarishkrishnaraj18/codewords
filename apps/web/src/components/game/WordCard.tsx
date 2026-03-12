@@ -10,6 +10,9 @@ interface Props {
   canGuess: boolean
   canBlindGuess: boolean
   onGuess: (index: number) => void
+  isSelected?: boolean
+  onSelect?: (index: number) => void
+  onConfirm?: (index: number) => void
 }
 
 const revealedBg: Record<string, string> = {
@@ -43,7 +46,7 @@ const spymasterText: Record<string, string> = {
   unknown: '#3d2e1a',
 }
 
-export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, onGuess }: Props) {
+export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, onGuess, isSelected, onSelect, onConfirm }: Props) {
   const isClickable = (canGuess || canBlindGuess) && !card.revealed
   const { definition, loading, lookup } = useWordDefinition()
   const [showDef, setShowDef] = useState(false)
@@ -53,16 +56,39 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
     lookup(card.word)
   }, 600)
 
+  const handleClick = () => {
+    if (!isClickable) return
+    // Two-step: first click selects, if already selected deselect
+    if (onSelect) {
+      if (isSelected) {
+        onSelect(-1) // deselect
+      } else {
+        onSelect(card.index)
+      }
+    } else {
+      onGuess(card.index)
+    }
+  }
+
   return (
     <div className="relative">
       <motion.div
         layout
-        whileHover={isClickable ? { scale: 1.05, y: -3 } : {}}
-        whileTap={isClickable ? { scale: 0.96 } : {}}
-        onClick={() => isClickable && onGuess(card.index)}
+        animate={isSelected
+          ? { scale: 1.06, y: -4 }
+          : { scale: 1, y: 0 }
+        }
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        whileHover={isClickable && !isSelected ? { scale: 1.04, y: -2 } : {}}
+        whileTap={isClickable ? { scale: 0.97 } : {}}
+        onClick={handleClick}
         {...longPressHandlers}
         className={`relative w-full rounded-xl select-none overflow-hidden ${isClickable ? 'cursor-pointer' : 'cursor-default'}`}
-        style={{ aspectRatio: '5/3', minHeight: 52 }}
+        style={{
+          aspectRatio: '5/3',
+          minHeight: 52,
+          boxShadow: isSelected ? '0 0 0 3px #fbbf24, 0 6px 20px rgba(251,191,36,0.35)' : undefined,
+        }}
       >
         {!card.revealed ? (
           isSpymaster ? (
@@ -130,6 +156,22 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
           </motion.div>
         )}
       </motion.div>
+
+      {/* Confirm button — appears when card is selected */}
+      <AnimatePresence>
+        {isSelected && !card.revealed && onConfirm && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.7, y: 4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.7, y: 4 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+            onClick={(e) => { e.stopPropagation(); onConfirm(card.index) }}
+            className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 w-8 h-8 rounded-full bg-[#22c55e] hover:bg-[#16a34a] text-white text-base font-bold flex items-center justify-center shadow-lg shadow-green-900/50 border-2 border-[#1e1610]"
+          >
+            ✓
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Definition popover */}
       <AnimatePresence>

@@ -62,11 +62,18 @@ export function gameReducer(state: ClientGameState, action: GameAction): ClientG
       return { ...state, players: [...state.players, action.payload.player] }
 
     case 'PLAYER_LEFT':
+      // If game is active, mark disconnected; in lobby, remove fully
+      if (state.status === 'active') {
+        return {
+          ...state,
+          players: state.players.map((p) =>
+            p.userId === action.payload.userId ? { ...p, connected: false } : p
+          ),
+        }
+      }
       return {
         ...state,
-        players: state.players.map((p) =>
-          p.userId === action.payload.userId ? { ...p, connected: false } : p
-        ),
+        players: state.players.filter((p) => p.userId !== action.payload.userId),
       }
 
     case 'ROLE_UPDATED':

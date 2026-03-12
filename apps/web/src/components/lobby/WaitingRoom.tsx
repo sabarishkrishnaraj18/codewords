@@ -9,16 +9,36 @@ interface Props {
   isHost: boolean
   onSetRole: (team: Team, role: Role) => void
   onStart: () => void
+  onKick?: (userId: string) => void
+  lobbyError?: string
 }
 
-const ROLES: { team: Team; role: Role; label: string; icon: string; desc: string }[] = [
-  { team: 'blue', role: 'spymaster', label: 'Blue Spymaster', icon: '🕵️', desc: 'Give clues to your team' },
-  { team: 'blue', role: 'operative', label: 'Blue Operative', icon: '🔵', desc: 'Guess the words' },
-  { team: 'red', role: 'spymaster', label: 'Red Spymaster', icon: '🕵️‍♀️', desc: 'Give clues to your team' },
-  { team: 'red', role: 'operative', label: 'Red Operative', icon: '🔴', desc: 'Guess the words' },
+// SVG icons — no emojis
+const EyeIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+)
+
+const CrosshairIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="22" y1="12" x2="18" y2="12"/>
+    <line x1="6" y1="12" x2="2" y2="12"/>
+    <line x1="12" y1="6" x2="12" y2="2"/>
+    <line x1="12" y1="22" x2="12" y2="18"/>
+  </svg>
+)
+
+const ROLES: { team: Team; role: Role; label: string; desc: string }[] = [
+  { team: 'blue', role: 'spymaster', label: 'Blue Spymaster', desc: 'Give clues to your team' },
+  { team: 'blue', role: 'operative', label: 'Blue Operative', desc: 'Guess the words' },
+  { team: 'red', role: 'spymaster', label: 'Red Spymaster', desc: 'Give clues to your team' },
+  { team: 'red', role: 'operative', label: 'Red Operative', desc: 'Guess the words' },
 ]
 
-export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSetRole, onStart }: Props) {
+export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSetRole, onStart, onKick, lobbyError }: Props) {
   const canStart = players.length >= 2
 
   return (
@@ -48,12 +68,27 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
           </div>
         </div>
 
+        {/* Error toast */}
+        <AnimatePresence>
+          {lobbyError && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="mb-4 px-4 py-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-sm text-center"
+            >
+              {lobbyError}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Role picker */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           {ROLES.map((r) => {
             const occupant = players.find((p) => p.team === r.team && p.role === r.role)
             const isMe = occupant?.userId === myUserId
-            const isTaken = !!occupant && !isMe
+            // For spymaster: block if taken by someone else. Operatives: always clickable.
+            const spymasterTakenByOther = r.role === 'spymaster' && !!occupant && !isMe
             const isBlue = r.team === 'blue'
 
             const base = 'relative rounded-xl p-4 border-2 text-left transition-all'
@@ -63,30 +98,42 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
             const available = isBlue
               ? 'border-[#008ee0]/25 bg-[#008ee0]/8 hover:border-[#008ee0]/60 cursor-pointer'
               : 'border-[#ff5241]/25 bg-[#ff5241]/8 hover:border-[#ff5241]/60 cursor-pointer'
-            const taken = 'border-white/8 bg-white/4 opacity-50 cursor-default'
+            const locked = 'border-white/8 bg-white/4 cursor-not-allowed'
 
             return (
               <motion.button
                 key={`${r.team}-${r.role}`}
-                whileHover={!isTaken ? { scale: 1.02 } : {}}
-                whileTap={!isTaken ? { scale: 0.98 } : {}}
-                onClick={() => !isTaken && onSetRole(r.team, r.role)}
-                className={`${base} ${isMe ? selected : isTaken ? taken : available}`}
+                whileHover={!spymasterTakenByOther ? { scale: 1.02 } : {}}
+                whileTap={!spymasterTakenByOther ? { scale: 0.98 } : {}}
+                onClick={() => !spymasterTakenByOther && onSetRole(r.team, r.role)}
+                className={`${base} ${isMe ? selected : spymasterTakenByOther ? locked : available}`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl">{r.icon}</span>
-                  <span className="font-bold text-sm" style={{ color: isBlue ? '#52b7ff' : '#ff8370' }}>
+                <div className="flex items-center gap-2.5 mb-1">
+                  {/* SVG icon instead of emoji */}
+                  {r.role === 'spymaster' ? (
+                    <EyeIcon className={`w-5 h-5 shrink-0 ${isBlue ? 'text-[#52b7ff]' : 'text-[#ff8370]'} ${spymasterTakenByOther ? 'opacity-30' : ''}`} />
+                  ) : (
+                    <CrosshairIcon className={`w-5 h-5 shrink-0 ${isBlue ? 'text-[#52b7ff]' : 'text-[#ff8370]'}`} />
+                  )}
+                  <span className={`font-bold text-sm ${spymasterTakenByOther ? 'text-white/30' : ''}`} style={{ color: spymasterTakenByOther ? undefined : (isBlue ? '#52b7ff' : '#ff8370') }}>
                     {r.label}
                   </span>
                   {isMe && (
                     <span className="ml-auto text-[10px] bg-white/15 rounded-md px-1.5 py-0.5 text-white/70 font-semibold">YOU</span>
                   )}
+                  {spymasterTakenByOther && (
+                    <span className="ml-auto text-[10px] bg-white/8 rounded-md px-1.5 py-0.5 text-white/25 font-semibold uppercase tracking-wide">Taken</span>
+                  )}
                 </div>
-                <p className="text-xs text-white/40">{r.desc}</p>
+                <p className={`text-xs ${spymasterTakenByOther ? 'text-white/20' : 'text-white/40'}`}>{r.desc}</p>
                 {occupant && (
-                  <p className="text-xs text-white/60 mt-1 font-medium">
+                  <p className={`text-xs mt-1 font-medium ${spymasterTakenByOther ? 'text-white/30' : 'text-white/60'}`}>
                     {occupant.username}{isMe ? ' (you)' : ''}
                   </p>
+                )}
+                {/* Operative slot — show "join" hint if operatives already present */}
+                {r.role === 'operative' && !isMe && occupant && (
+                  <p className="text-[10px] text-white/25 mt-0.5">+{players.filter(p => p.team === r.team && p.role === 'operative').length} joined</p>
                 )}
               </motion.button>
             )
@@ -106,15 +153,30 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
-                  className="px-3 py-1 rounded-full text-xs font-semibold"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
                   style={{
                     background: p.team === 'blue' ? 'rgba(0,142,224,0.2)' : 'rgba(255,82,65,0.2)',
                     color: p.team === 'blue' ? '#52b7ff' : '#ff8370',
                     outline: p.userId === myUserId ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
                   }}
                 >
-                  {p.username}{p.role === 'spymaster' ? ' 🕵️' : ''}
-                  {p.userId === myUserId && ' ✓'}
+                  <span>{p.username}</span>
+                  <span className="text-[9px] font-bold uppercase opacity-50 tracking-wide">
+                    {p.role === 'spymaster' ? 'SPY' : 'OP'}
+                  </span>
+                  {p.userId === myUserId && (
+                    <span className="text-[9px] bg-white/15 rounded px-1 text-white/50">YOU</span>
+                  )}
+                  {/* Host kick button */}
+                  {isHost && p.userId !== myUserId && onKick && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onKick(p.userId) }}
+                      className="w-4 h-4 rounded-full bg-white/10 hover:bg-red-500/50 text-white/30 hover:text-white text-[10px] flex items-center justify-center transition-colors ml-0.5 leading-none"
+                      title={`Kick ${p.username}`}
+                    >
+                      ×
+                    </button>
+                  )}
                 </motion.div>
               ))}
             </AnimatePresence>

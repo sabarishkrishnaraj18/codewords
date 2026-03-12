@@ -26,9 +26,18 @@ export default function GamePage() {
   const [showLog, setShowLog] = useState(false)
   const [showRules, setShowRules] = useState(false)
   const [scoreSaved, setScoreSaved] = useState(false)
+  const [selectedCard, setSelectedCard] = useState<number | null>(null)
 
   const userId = user?.id ?? ''
   const myTeam = state.players.find(p => p.userId === userId)?.team
+
+  // Save last room for rejoin, clear on game over
+  useEffect(() => {
+    if (typeof window !== 'undefined') localStorage.setItem('codewords_last_room', roomCode)
+  }, [roomCode])
+  useEffect(() => {
+    if (state.gameOverData && typeof window !== 'undefined') localStorage.removeItem('codewords_last_room')
+  }, [state.gameOverData])
 
   // Rejoin if needed
   useEffect(() => {
@@ -64,11 +73,16 @@ export default function GamePage() {
 
   const { isSpymaster, canGuess, canGiveClue, canBlindGuess } = useRole(state, userId)
 
-  const handleGuess = (i: number) => socket?.emit('guess-card', { roomCode, userId, cardIndex: i })
+  const handleGuess = (i: number) => { socket?.emit('guess-card', { roomCode, userId, cardIndex: i }); setSelectedCard(null) }
+  const handleSelect = (i: number) => setSelectedCard(i === -1 || i === selectedCard ? null : i)
+  const handleConfirm = (i: number) => handleGuess(i)
   const handleClue = (word: string, number: number) => socket?.emit('give-clue', { roomCode, userId, word, number })
-  const handleEndTurn = () => socket?.emit('end-turn', { roomCode, userId })
-  const handlePlayAgain = () => { setScoreSaved(false); socket?.emit('reset-game', { roomCode, userId }) }
+  const handleEndTurn = () => { socket?.emit('end-turn', { roomCode, userId }); setSelectedCard(null) }
+  const handlePlayAgain = () => { setScoreSaved(false); setSelectedCard(null); socket?.emit('reset-game', { roomCode, userId }) }
   const cardWords = state.cards.map(c => c.word)
+
+  // Clear selection when a card is revealed
+  useEffect(() => { setSelectedCard(null) }, [state.cards.filter(c => c.revealed).length])
 
   const turnColor = state.currentTurn === 'blue' ? 'text-[#52b7ff]' : 'text-[#ff8370]'
   const isMyTurn = myTeam === state.currentTurn && state.status === 'active'
@@ -168,7 +182,7 @@ export default function GamePage() {
       <div className="flex-1 flex gap-0 px-2 pb-2 min-h-0 overflow-hidden">
 
         {/* Blue team panel — desktop only */}
-        <div className="hidden md:block w-56 shrink-0 pr-1">
+        <div className="hidden md:block w-64 shrink-0 pr-1">
           <TeamPanel
             team="blue"
             players={state.players}
@@ -193,6 +207,9 @@ export default function GamePage() {
               canGuess={canGuess}
               canBlindGuess={canBlindGuess}
               onGuess={handleGuess}
+              selectedCard={canGuess ? selectedCard : null}
+              onSelect={canGuess ? handleSelect : undefined}
+              onConfirm={canGuess ? handleConfirm : undefined}
             />
           </div>
 
@@ -219,7 +236,7 @@ export default function GamePage() {
         </div>
 
         {/* Red team panel — desktop only */}
-        <div className="hidden md:block w-56 shrink-0 pl-1">
+        <div className="hidden md:block w-64 shrink-0 pl-1">
           <TeamPanel
             team="red"
             players={state.players}

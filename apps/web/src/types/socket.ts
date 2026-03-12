@@ -12,6 +12,7 @@ export interface ClientToServerEvents {
   'end-turn': (payload: { roomCode: string; userId: string }) => void
   'blind-guess': (payload: { roomCode: string; userId: string; cardIndex: number }) => void
   'reset-game': (payload: { roomCode: string; userId: string }) => void
+  'kick-player': (payload: { roomCode: string; hostUserId: string; targetUserId: string }) => void
 }
 
 // Server -> Client
@@ -20,6 +21,7 @@ export interface ServerToClientEvents {
   'room-joined': (payload: { gameState: GameState }) => void
   'player-joined': (payload: { player: Player }) => void
   'player-left': (payload: { userId: string }) => void
+  'player-kicked': (payload: { userId: string }) => void
   'role-updated': (payload: { userId: string; team: Team; role: Role }) => void
   'game-started': (payload: { gameState: GameState }) => void
   'clue-given': (payload: { clue: Clue; team: Team }) => void
