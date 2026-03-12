@@ -36,23 +36,39 @@ export default function HomePage() {
   const handleCreate = () => {
     if (!username.trim()) { setError('Set your name first'); return }
     setBusy(true)
+    setError('')
     const socket = getSocket()
-    if (!socket.connected) socket.connect()
-    socket.once('room-created', ({ roomCode }) => router.push(`/lobby/${roomCode}`))
-    socket.once('error', ({ message }) => { setError(message); setBusy(false) })
-    socket.emit('create-room', { userId, username: username.trim(), wordMode: 'standard', timerSeconds: timer })
+    const doCreate = () => {
+      socket.once('room-created', ({ roomCode }) => router.push(`/lobby/${roomCode}`))
+      socket.once('error', ({ message }) => { setError(message); setBusy(false) })
+      socket.emit('create-room', { userId, username: username.trim(), wordMode: 'standard', timerSeconds: timer })
+    }
+    if (socket.connected) { doCreate() }
+    else {
+      socket.connect()
+      socket.once('connect', doCreate)
+      socket.once('connect_error', () => { setError('Cannot connect to server. Check your internet connection.'); setBusy(false) })
+    }
   }
 
   const handleJoin = () => {
     if (!username.trim()) { setError('Set your name first'); return }
     if (!joinCode.trim()) { setError('Enter a room code'); return }
     setBusy(true)
+    setError('')
     const socket = getSocket()
-    if (!socket.connected) socket.connect()
     const code = joinCode.toUpperCase().trim()
-    socket.once('room-joined', () => router.push(`/lobby/${code}`))
-    socket.once('error', ({ message }) => { setError(message); setBusy(false) })
-    socket.emit('join-room', { roomCode: code, userId, username: username.trim() })
+    const doJoin = () => {
+      socket.once('room-joined', () => router.push(`/lobby/${code}`))
+      socket.once('error', ({ message }) => { setError(message); setBusy(false) })
+      socket.emit('join-room', { roomCode: code, userId, username: username.trim() })
+    }
+    if (socket.connected) { doJoin() }
+    else {
+      socket.connect()
+      socket.once('connect', doJoin)
+      socket.once('connect_error', () => { setError('Cannot connect to server. Check your internet connection.'); setBusy(false) })
+    }
   }
 
   const saveName = () => {
