@@ -138,7 +138,7 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
             initial={{ opacity: 0, scale: 0.9, y: 4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="absolute z-50 bottom-full mb-2 left-1/2 -translate-x-1/2 w-60 bg-[#0f172a] border border-white/20 rounded-xl shadow-2xl p-3"
+            className="absolute z-50 bottom-full mb-2 left-1/2 -translate-x-1/2 w-60 bg-[#1a1208] border border-white/20 rounded-xl shadow-2xl p-3"
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={() => setShowDef(false)} className="absolute top-2 right-2 text-gray-500 hover:text-white text-xs leading-none">✕</button>

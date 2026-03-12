@@ -15,7 +15,7 @@ export default function MobileTeamStrip({
 }: Props) {
   const isBlue = team === 'blue'
   const color = isBlue ? '#008ee0' : '#ff5241'
-  const bg = isBlue ? 'bg-[#051526]/95' : 'bg-[#200808]/95'
+  const bg = isBlue ? 'bg-[#0d3a6b]/90' : 'bg-[#5e140c]/90'
   const border = isActiveTeam
     ? (isBlue ? 'border-[#008ee0]/60' : 'border-[#ff5241]/60')
     : (isBlue ? 'border-[#008ee0]/15' : 'border-[#ff5241]/15')

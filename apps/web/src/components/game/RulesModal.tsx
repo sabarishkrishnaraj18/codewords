@@ -29,7 +29,7 @@ export default function RulesModal({ onClose }: Props) {
         initial={{ scale: 0.92, y: 16 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.92, y: 16 }}
-        className="bg-[#0f1a2e] border border-white/15 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+        className="bg-[#1a1208] border border-white/15 rounded-2xl p-6 max-w-md w-full shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">

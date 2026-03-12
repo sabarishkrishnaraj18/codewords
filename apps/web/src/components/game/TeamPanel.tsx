@@ -44,7 +44,7 @@ function PlayerAvatar({ player, team, isMe, isActiveTeam }: { player: Player; te
         </motion.div>
         {isMe && (
           <div
-            className="absolute bottom-0.5 right-0.5 w-5 h-5 rounded-full border-2 border-[#0f1520] flex items-center justify-center"
+            className="absolute bottom-0.5 right-0.5 w-5 h-5 rounded-full border-2 border-[#1e1610] flex items-center justify-center"
             style={{ background: '#22c55e' }}
           >
             <span className="text-[6px] font-black text-white leading-none">YOU</span>
