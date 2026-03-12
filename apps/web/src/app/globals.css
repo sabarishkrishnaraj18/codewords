@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #16213e;
+  --background: #0f1520;
   --foreground: #f0f0f0;
 
   /* Exact colors from codenames.game */

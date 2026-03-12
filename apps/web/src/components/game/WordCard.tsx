@@ -13,8 +13,8 @@ interface Props {
 }
 
 const revealedBg: Record<string, string> = {
-  blue: 'bg-[#008ee0]',
-  red: 'bg-[#ff5241]',
+  blue: 'bg-[#5ba3d4]',
+  red: 'bg-[#cd4d3c]',
   neutral: 'bg-[#c8a97a]',
   assassin: 'bg-[#2d2d2d]',
 }
@@ -61,8 +61,8 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
         whileTap={isClickable ? { scale: 0.96 } : {}}
         onClick={() => isClickable && onGuess(card.index)}
         {...longPressHandlers}
-        className={`relative w-full rounded-lg select-none overflow-hidden ${isClickable ? 'cursor-pointer' : 'cursor-default'}`}
-        style={{ aspectRatio: '5/3' }}
+        className={`relative w-full rounded-xl select-none overflow-hidden ${isClickable ? 'cursor-pointer' : 'cursor-default'}`}
+        style={{ aspectRatio: '5/3', minHeight: 52 }}
       >
         {!card.revealed ? (
           isSpymaster ? (
@@ -77,7 +77,7 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
                 <span className="absolute top-1 left-1 text-xs opacity-60" style={{ color: spymasterText[card.color] }}>☠</span>
               )}
               <span
-                className="relative z-10 font-display font-bold text-[11px] sm:text-sm tracking-widest uppercase text-center px-1 leading-tight"
+                className="relative z-10 font-display font-bold text-[11px] sm:text-sm tracking-wider uppercase text-center px-1 leading-tight"
                 style={{ color: spymasterText[card.color] ?? '#3d2e1a' }}
               >
                 {card.word}
@@ -95,11 +95,11 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
             /* Operative sees warm beige */
             <div
               className="absolute inset-0 flex items-center justify-center bg-[#e8d5b0]"
-              style={{ borderBottom: '4px solid #b8a080' }}
+              style={{ boxShadow: '0 5px 0 #b8a080, 0 2px 6px rgba(0,0,0,0.3)' }}
             >
               <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black/10 to-transparent pointer-events-none" />
               <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/15 to-transparent pointer-events-none" />
-              <span className="relative z-10 font-display font-bold text-[#3d2e1a] text-[11px] sm:text-sm tracking-widest uppercase text-center px-1 leading-tight">
+              <span className="relative z-10 font-display font-bold text-[#3d2e1a] text-[11px] sm:text-sm tracking-wider uppercase text-center px-1 leading-tight">
                 {card.word}
               </span>
               {canBlindGuess && (
@@ -119,11 +119,12 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
             animate={{ rotateY: 0, opacity: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
             className={`absolute inset-0 flex items-center justify-center ${revealedBg[card.color] || 'bg-gray-600'} ${revealedText[card.color] || 'text-white'}`}
+            style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 6px rgba(0,0,0,0.4)' }}
           >
             <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
             {card.color === 'assassin' && <span className="absolute top-1 left-1 text-xs opacity-60">☠</span>}
-            <span className="relative z-10 font-display font-bold text-[11px] sm:text-sm tracking-widest uppercase text-center px-1 leading-tight opacity-90">
+            <span className="relative z-10 font-display font-bold text-[11px] sm:text-sm tracking-wider uppercase text-center px-1 leading-tight opacity-90">
               {card.word}
             </span>
           </motion.div>

@@ -32,7 +32,7 @@ export default function BlindGuessOverlay({ cards, isEligible, onGuess, results 
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: '100%', opacity: 0 }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="fixed inset-0 z-50 bg-[#1a1a2e]/95 backdrop-blur-sm flex flex-col items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-[#0f1520]/95 backdrop-blur-sm flex flex-col items-center justify-center p-4"
     >
       <h2 className="text-3xl font-display font-bold text-yellow-400 mb-2 uppercase tracking-wider">
         Blind Guess!

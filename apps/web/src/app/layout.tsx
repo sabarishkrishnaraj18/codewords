@@ -1,10 +1,17 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { AuthProvider } from "@/contexts/AuthContext"
 
 export const metadata: Metadata = {
   title: "Codewords — Codenames Online",
   description: "Play Codenames online with friends",
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -18,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased bg-[#16213e] text-white min-h-screen">
+      <body className="antialiased bg-[#0f1520] text-white min-h-screen">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

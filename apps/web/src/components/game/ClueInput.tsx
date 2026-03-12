@@ -36,7 +36,7 @@ export default function ClueInput({ onSubmit, cardWords }: Props) {
       className="flex flex-col items-center gap-1.5 w-full"
     >
       {/* Main clue row — matches screenshot exactly */}
-      <div className="flex items-center gap-2 w-full max-w-xl">
+      <div className="flex items-center gap-2 w-full max-w-2xl">
         {/* Pill input */}
         <input
           type="text"
@@ -45,7 +45,7 @@ export default function ClueInput({ onSubmit, cardWords }: Props) {
           onKeyDown={e => e.key === 'Enter' && handleSubmit()}
           placeholder="YOUR CLUE"
           maxLength={30}
-          className="flex-1 bg-white/95 border-2 border-white/80 rounded-full px-6 py-3 text-[#1a1a1a] font-display font-bold text-lg uppercase tracking-widest placeholder-gray-400 focus:outline-none focus:border-white text-center shadow-lg"
+          className="flex-1 bg-white/95 border-2 border-white/80 rounded-full px-6 py-4 text-[#1a1a1a] font-display font-bold text-base uppercase tracking-widest placeholder-gray-400 focus:outline-none focus:border-white text-center shadow-lg"
         />
 
         {/* Minus */}
