@@ -125,7 +125,7 @@ export default function GamePage() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             className={`font-display font-black text-2xl sm:text-5xl uppercase tracking-[0.1em] sm:tracking-[0.14em] ${
-              state.blindGuessPhase ? 'text-yellow-300' : turnColor
+              state.blindGuessPhase ? 'text-yellow-300' : 'text-white'
             }`}
           >
             {headingText}
