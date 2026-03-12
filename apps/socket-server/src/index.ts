@@ -14,13 +14,13 @@ const NEXT_ORIGIN = process.env.NEXT_ORIGIN || 'http://localhost:3000'
 
 const io = new Server(httpServer, {
   cors: {
-    origin: [NEXT_ORIGIN, 'http://localhost:3000', 'http://localhost:3001'],
+    origin: true,
     methods: ['GET', 'POST'],
     credentials: true,
   },
 })
 
-app.use(cors({ origin: NEXT_ORIGIN }))
+app.use(cors({ origin: true }))
 app.use(express.json())
 
 app.get('/health', (_req, res) => {
