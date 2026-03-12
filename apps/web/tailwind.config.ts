@@ -23,7 +23,7 @@ const config: Config = {
         'game-bg': '#1a1a2e',
       },
       fontFamily: {
-        display: ['Oswald', 'Impact', 'sans-serif'],
+        display: ['Russo One', 'Impact', 'sans-serif'],
       },
     },
   },

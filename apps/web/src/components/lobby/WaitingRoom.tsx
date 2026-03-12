@@ -22,7 +22,7 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
   const canStart = players.length >= 2
 
   return (
-    <div className="min-h-screen bg-[#0f1520] flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-[#1e1610] flex flex-col items-center justify-center p-6" style={{ backgroundImage: 'radial-gradient(ellipse at 50% 0%, #2a1e0e 0%, #1e1610 60%)' }}>
       {/* Logo */}
       <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
         <h1 className="font-display text-5xl font-bold tracking-wider mb-1">

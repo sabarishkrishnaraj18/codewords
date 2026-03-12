@@ -89,7 +89,7 @@ export default function GamePage() {
   }
 
   return (
-    <div className="h-screen bg-[#0f1520] flex flex-col overflow-hidden">
+    <div className="h-screen bg-[#1e1610] flex flex-col overflow-hidden" style={{ backgroundImage: 'radial-gradient(ellipse at 50% 0%, #2a1e0e 0%, #1e1610 60%)' }}>
       {/* Top nav — transparent, blends with bg */}
       <header className="flex items-center justify-between px-3 py-2 shrink-0 bg-transparent">
         <div className="flex items-center gap-2">
@@ -99,22 +99,20 @@ export default function GamePage() {
           <span className="text-white/40 text-xs font-mono bg-white/10 border border-white/20 px-2 py-0.5 rounded-md tracking-widest">{roomCode}</span>
           <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-green-400' : 'bg-red-400'}`} />
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 bg-black/25 rounded-full px-1 py-1">
           <button onClick={() => setShowLog(v => !v)}
-            className={`hidden sm:block px-4 py-1 rounded-full text-xs font-semibold transition-colors border ${
-              showLog
-                ? 'bg-white/15 text-white border-white/30'
-                : 'bg-transparent text-white/45 border-white/20 hover:bg-white/8 hover:text-white/70'
+            className={`hidden sm:block px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+              showLog ? 'bg-white/20 text-white' : 'text-white/55 hover:bg-white/10 hover:text-white/80'
             }`}>
             Log
           </button>
           <button onClick={() => setShowRules(true)}
-            className="px-4 py-1 rounded-full bg-transparent hover:bg-white/8 text-xs text-white/45 hover:text-white/70 transition-colors border border-white/20 font-semibold">
+            className="px-3 py-1 rounded-full text-xs font-semibold text-white/55 hover:bg-white/10 hover:text-white/80 transition-colors">
             Rules
           </button>
           <button onClick={() => router.push('/')}
-            className="px-4 py-1 rounded-full bg-transparent hover:bg-white/8 text-xs text-white/45 hover:text-white/70 transition-colors border border-white/20 font-semibold">
-            ← Home
+            className="px-3 py-1 rounded-full text-xs font-semibold text-white/55 hover:bg-white/10 hover:text-white/80 transition-colors">
+            Home
           </button>
         </div>
       </header>
@@ -181,21 +179,8 @@ export default function GamePage() {
             timerSecondsRemaining={state.timerSecondsRemaining}
             guessesRemaining={state.currentTurn === 'blue' ? state.guessesRemaining : 0}
             myUserId={userId}
+            showCount={true}
           />
-        </div>
-
-        {/* Blue count column — desktop only */}
-        <div className="hidden md:flex w-16 shrink-0 items-center justify-center overflow-visible">
-          <motion.span
-            key={state.remainingBlue}
-            initial={{ scale: 1.4, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 14 }}
-            className="font-display font-black text-7xl leading-none select-none"
-            style={{ color: '#52b7ff', textShadow: '0 0 32px rgba(82,183,255,0.6)' }}
-          >
-            {state.remainingBlue}
-          </motion.span>
         </div>
 
         {/* Center column */}
@@ -233,20 +218,6 @@ export default function GamePage() {
           </div>
         </div>
 
-        {/* Red count column — desktop only */}
-        <div className="hidden md:flex w-16 shrink-0 items-center justify-center overflow-visible">
-          <motion.span
-            key={state.remainingRed}
-            initial={{ scale: 1.4, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 14 }}
-            className="font-display font-black text-7xl leading-none select-none"
-            style={{ color: '#ff8370', textShadow: '0 0 32px rgba(255,131,112,0.6)' }}
-          >
-            {state.remainingRed}
-          </motion.span>
-        </div>
-
         {/* Red team panel — desktop only */}
         <div className="hidden md:block w-56 shrink-0 pl-1">
           <TeamPanel
@@ -259,6 +230,7 @@ export default function GamePage() {
             timerSecondsRemaining={state.timerSecondsRemaining}
             guessesRemaining={state.currentTurn === 'red' ? state.guessesRemaining : 0}
             myUserId={userId}
+            showCount={true}
           />
         </div>
 
@@ -270,7 +242,7 @@ export default function GamePage() {
               animate={{ width: 180, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="hidden sm:block shrink-0 bg-[#0a1525]/80 border border-white/8 rounded-xl overflow-hidden"
+              className="hidden sm:block shrink-0 bg-[#120e08]/80 border border-white/8 rounded-xl overflow-hidden"
             >
               <GameLog events={state.events} />
             </motion.div>

@@ -24,7 +24,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1520] flex items-center justify-center">
+      <div className="min-h-screen bg-[#1e1610] flex items-center justify-center">
         <div className="text-white/40 text-sm">Loading…</div>
       </div>
     )
@@ -81,11 +81,11 @@ export default function HomePage() {
   const isLoggedIn = user && !user.isGuest
 
   return (
-    <div className="min-h-screen bg-[#0f1520] flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#1e1610] flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       {/* Ambient blobs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/5 w-80 h-80 bg-blue-600/14 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/5 w-80 h-80 bg-red-600/14 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/5 w-80 h-80 bg-amber-800/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/5 w-80 h-80 bg-amber-900/15 rounded-full blur-3xl" />
       </div>
 
       {/* Logo */}
