@@ -103,7 +103,7 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
                 <span className="absolute top-1 left-1 text-xs opacity-60" style={{ color: spymasterText[card.color] }}>☠</span>
               )}
               <span
-                className="relative z-10 font-display font-bold text-[11px] sm:text-sm tracking-wider uppercase text-center px-1 leading-tight"
+                className="relative z-10 font-display font-bold text-[11px] lg:text-sm tracking-wider uppercase text-center px-1 leading-tight"
                 style={{ color: spymasterText[card.color] ?? '#3d2e1a' }}
               >
                 {card.word}
@@ -125,7 +125,7 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
             >
               <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black/10 to-transparent pointer-events-none" />
               <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/15 to-transparent pointer-events-none" />
-              <span className="relative z-10 font-display font-bold text-[#3d2e1a] text-[11px] sm:text-sm tracking-wider uppercase text-center px-1 leading-tight">
+              <span className="relative z-10 font-display font-bold text-[#3d2e1a] text-[11px] lg:text-sm tracking-wider uppercase text-center px-1 leading-tight">
                 {card.word}
               </span>
               {canBlindGuess && (
@@ -150,7 +150,7 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
             <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
             {card.color === 'assassin' && <span className="absolute top-1 left-1 text-xs opacity-60">☠</span>}
-            <span className="relative z-10 font-display font-bold text-[11px] sm:text-sm tracking-wider uppercase text-center px-1 leading-tight opacity-90">
+            <span className="relative z-10 font-display font-bold text-[11px] lg:text-sm tracking-wider uppercase text-center px-1 leading-tight opacity-90">
               {card.word}
             </span>
           </motion.div>
@@ -166,7 +166,7 @@ export default function WordCard({ card, isSpymaster, canGuess, canBlindGuess, o
             exit={{ opacity: 0, scale: 0.7, y: 4 }}
             transition={{ type: 'spring', stiffness: 400, damping: 18 }}
             onClick={(e) => { e.stopPropagation(); onConfirm(card.index) }}
-            className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 w-8 h-8 rounded-full bg-[#22c55e] hover:bg-[#16a34a] text-white text-base font-bold flex items-center justify-center shadow-lg shadow-green-900/50 border-2 border-[#1e1610]"
+            className="absolute bottom-1.5 right-1.5 z-20 w-8 h-8 rounded-full bg-[#22c55e] hover:bg-[#16a34a] active:bg-[#16a34a] text-white text-base font-bold flex items-center justify-center shadow-lg shadow-green-900/50 border-2 border-[#1e1610]"
           >
             ✓
           </motion.button>

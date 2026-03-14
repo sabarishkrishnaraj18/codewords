@@ -74,12 +74,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = useCallback(async (email: string, password: string, username: string): Promise<string | null> => {
     if (!supabase) return 'Supabase not configured'
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { username } },
     })
-    if (!error) saveUsername(username)
+    if (!error) {
+      saveUsername(username)
+      if (data.user) {
+        await supabase.from('profiles').upsert({ id: data.user.id, username })
+      }
+    }
     return error?.message ?? null
   }, [supabase])
 

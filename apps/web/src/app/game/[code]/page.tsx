@@ -182,7 +182,7 @@ export default function GamePage() {
       <div className="flex-1 flex gap-0 px-2 pb-2 min-h-0 overflow-hidden">
 
         {/* Blue team panel — desktop only */}
-        <div className="hidden md:block w-64 shrink-0 pr-1">
+        <div className="hidden md:block w-52 lg:w-64 shrink-0 pr-1">
           <TeamPanel
             team="blue"
             players={state.players}
@@ -236,7 +236,7 @@ export default function GamePage() {
         </div>
 
         {/* Red team panel — desktop only */}
-        <div className="hidden md:block w-64 shrink-0 pl-1">
+        <div className="hidden md:block w-52 lg:w-64 shrink-0 pl-1">
           <TeamPanel
             team="red"
             players={state.players}

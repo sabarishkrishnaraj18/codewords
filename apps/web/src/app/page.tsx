@@ -105,7 +105,7 @@ export default function HomePage() {
 
       {/* Logo */}
       <motion.div initial={{ opacity: 0, y: -24 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 z-10">
-        <h1 className="font-display text-6xl sm:text-7xl font-bold tracking-wider mb-1">
+        <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold tracking-wider mb-1">
           <span className="text-[#008ee0]">CODE</span><span className="text-white">WORDS</span>
         </h1>
         <p className="text-white/40 text-sm">Codenames — online multiplayer</p>

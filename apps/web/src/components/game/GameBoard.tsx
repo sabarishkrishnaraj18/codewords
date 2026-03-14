@@ -31,7 +31,7 @@ export default function GameBoard({ cards, isSpymaster, canGuess, canBlindGuess,
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="grid grid-cols-5 gap-2 w-full pb-4">
+      <div className="grid grid-cols-5 gap-x-2 gap-y-4 sm:gap-2 w-full pb-4">
         {cards.map((card) => (
           <WordCard
             key={card.index}
