@@ -7,6 +7,7 @@ export function useRole(state: ClientGameState, userId: string) {
     const player = state.players.find((p) => p.userId === userId)
     const isSpymaster = player?.role === 'spymaster'
     const isOperative = player?.role === 'operative'
+    const isSpectator = player?.role === 'spectator' || !player
     const myTeam = player?.team ?? null
     const isMyTurn = myTeam === state.currentTurn && state.status === 'active'
     const canGuess =
@@ -29,6 +30,7 @@ export function useRole(state: ClientGameState, userId: string) {
       player,
       isSpymaster,
       isOperative,
+      isSpectator,
       myTeam,
       isMyTurn,
       canGuess,

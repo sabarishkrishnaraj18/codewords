@@ -15,6 +15,7 @@ import GameLog from '@/components/game/GameLog'
 import GameOverModal from '@/components/game/GameOverModal'
 import SpymasterKey from '@/components/game/SpymasterKey'
 import RulesModal from '@/components/game/RulesModal'
+import ClueDisplay from '@/components/game/ClueDisplay'
 
 export default function GamePage() {
   const params = useParams()
@@ -71,7 +72,7 @@ export default function GamePage() {
     }).then(() => setScoreSaved(true))
   }, [state.gameOverData, scoreSaved, user, userId, roomCode, state.players])
 
-  const { isSpymaster, canGuess, canGiveClue, canBlindGuess } = useRole(state, userId)
+  const { isSpymaster, isSpectator, canGuess, canGiveClue, canBlindGuess } = useRole(state, userId)
 
   const handleGuess = (i: number) => { socket?.emit('guess-card', { roomCode, userId, cardIndex: i }); setSelectedCard(null) }
   const handleSelect = (i: number) => setSelectedCard(i === -1 || i === selectedCard ? null : i)
@@ -105,13 +106,16 @@ export default function GamePage() {
   return (
     <div className="h-screen bg-[#1e1610] flex flex-col overflow-hidden" style={{ backgroundImage: 'radial-gradient(ellipse at 50% 0%, #2a1e0e 0%, #1e1610 60%)' }}>
       {/* Top nav — transparent, blends with bg */}
-      <header className="flex items-center justify-between px-3 py-2 shrink-0 bg-transparent">
+      <header className="flex items-center justify-between px-3 py-2 landscape:py-1 shrink-0 bg-transparent">
         <div className="flex items-center gap-2">
           <span className="font-display text-lg sm:text-xl font-bold">
             <span className="text-[#5ba3d4]">CODE</span><span className="text-white">WORDS</span>
           </span>
           <span className="text-white/40 text-xs font-mono bg-white/10 border border-white/20 px-2 py-0.5 rounded-md tracking-widest">{roomCode}</span>
           <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-green-400' : 'bg-red-400'}`} />
+          {isSpectator && (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 bg-white/8 border border-white/15 px-2 py-0.5 rounded-md">Spectating</span>
+          )}
         </div>
         <div className="flex items-center gap-1 bg-black/25 rounded-full px-1 py-1">
           <button onClick={() => setShowLog(v => !v)}
@@ -133,12 +137,12 @@ export default function GamePage() {
 
       {/* Turn heading — larger, more prominent */}
       {state.status === 'active' && (
-        <div className="text-center py-3 px-4 shrink-0">
+        <div className="text-center py-1.5 landscape:py-0.5 px-4 shrink-0">
           <motion.h2
             key={`${state.currentTurn}-${!!state.currentClue}-${state.blindGuessPhase}`}
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`font-display font-black text-2xl sm:text-5xl uppercase tracking-[0.1em] sm:tracking-[0.14em] ${
+            className={`font-display font-black text-xl landscape:text-base sm:text-5xl uppercase tracking-[0.1em] sm:tracking-[0.14em] ${
               state.blindGuessPhase ? 'text-yellow-300' : 'text-white'
             }`}
           >
@@ -158,8 +162,8 @@ export default function GamePage() {
         </div>
       )}
 
-      {/* Mobile team strips */}
-      <div className="block md:hidden px-2 pb-1 flex flex-col gap-1 shrink-0">
+      {/* Mobile team strips — portrait only */}
+      <div className="flex md:hidden landscape:hidden px-2 pb-1 flex-col gap-1 shrink-0">
         <MobileTeamStrip
           team="blue"
           remainingCards={state.remainingBlue}
@@ -215,6 +219,15 @@ export default function GamePage() {
 
           {/* Bottom controls */}
           <div className="flex flex-col items-center gap-2 shrink-0">
+            {/* Animated clue display — shown for operatives/spectators when clue is active */}
+            {!canGiveClue && (
+              <ClueDisplay
+                clue={state.currentClue}
+                team={state.currentTurn}
+                guessesRemaining={state.guessesRemaining}
+                blindGuessPhase={state.blindGuessPhase}
+              />
+            )}
             {canGiveClue && <ClueInput onSubmit={handleClue} cardWords={cardWords} />}
             {canGuess && state.guessesRemaining > 0 && !state.blindGuessPhase && (
               <motion.button

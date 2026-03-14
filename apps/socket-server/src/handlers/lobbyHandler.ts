@@ -81,7 +81,7 @@ export function registerLobbyHandlers(io: Server, socket: Socket): void {
       userId,
       username,
       team,
-      role: 'operative',
+      role: 'spectator',
       score: 0,
       connected: true,
       socketId: socket.id,
@@ -131,6 +131,17 @@ export function registerLobbyHandlers(io: Server, socket: Socket): void {
     const code = roomCode.toUpperCase()
     const room = getRoom(code)
     if (!room) return
+
+    // Spectator: just update role, keep current team
+    if (role === 'spectator') {
+      const updatedPlayers = room.gameState.players.map((p) =>
+        p.userId === userId ? { ...p, role: 'spectator' as const } : p
+      )
+      updateGameState(code, { ...room.gameState, players: updatedPlayers })
+      const player = room.gameState.players.find(p => p.userId === userId)
+      io.to(code).emit('role-updated', { userId, team: player?.team ?? 'blue', role: 'spectator' })
+      return
+    }
 
     // Enforce one spymaster per team
     if (role === 'spymaster') {

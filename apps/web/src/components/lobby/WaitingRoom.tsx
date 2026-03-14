@@ -31,6 +31,13 @@ const CrosshairIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+const BinocularsIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/>
+    <path d="M10 15h4"/><path d="M6 11V5a2 2 0 0 1 2-2h.5"/><path d="M18 11V5a2 2 0 0 0-2-2h-.5"/>
+  </svg>
+)
+
 const ROLES: { team: Team; role: Role; label: string; desc: string }[] = [
   { team: 'blue', role: 'spymaster', label: 'Blue Spymaster', desc: 'Give clues to your team' },
   { team: 'blue', role: 'operative', label: 'Blue Operative', desc: 'Guess the words' },
@@ -39,7 +46,10 @@ const ROLES: { team: Team; role: Role; label: string; desc: string }[] = [
 ]
 
 export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSetRole, onStart, onKick, lobbyError }: Props) {
-  const canStart = players.length >= 2
+  const myPlayer = players.find(p => p.userId === myUserId)
+  const amSpectator = myPlayer?.role === 'spectator'
+  const activePlayers = players.filter(p => p.role !== 'spectator')
+  const canStart = activePlayers.length >= 2
 
   return (
     <div className="min-h-screen bg-[#1e1610] flex flex-col items-center justify-center p-6" style={{ backgroundImage: 'radial-gradient(ellipse at 50% 0%, #2a1e0e 0%, #1e1610 60%)' }}>
@@ -83,7 +93,7 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
         </AnimatePresence>
 
         {/* Role picker */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
           {ROLES.map((r) => {
             const occupant = players.find((p) => p.team === r.team && p.role === r.role)
             const isMe = occupant?.userId === myUserId
@@ -109,7 +119,6 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
                 className={`${base} ${isMe ? selected : spymasterTakenByOther ? locked : available}`}
               >
                 <div className="flex items-center gap-2.5 mb-1">
-                  {/* SVG icon instead of emoji */}
                   {r.role === 'spymaster' ? (
                     <EyeIcon className={`w-5 h-5 shrink-0 ${isBlue ? 'text-[#52b7ff]' : 'text-[#ff8370]'} ${spymasterTakenByOther ? 'opacity-30' : ''}`} />
                   ) : (
@@ -131,7 +140,6 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
                     {occupant.username}{isMe ? ' (you)' : ''}
                   </p>
                 )}
-                {/* Operative slot — show "join" hint if operatives already present */}
                 {r.role === 'operative' && !isMe && occupant && (
                   <p className="text-[10px] text-white/25 mt-0.5">+{players.filter(p => p.team === r.team && p.role === 'operative').length} joined</p>
                 )}
@@ -139,6 +147,27 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
             )
           })}
         </div>
+
+        {/* Spectator option */}
+        <motion.button
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => onSetRole('blue', 'spectator')}
+          className={`w-full rounded-xl p-3 border-2 text-left transition-all mb-6 flex items-center gap-3 ${
+            amSpectator
+              ? 'border-white/40 bg-white/10'
+              : 'border-white/10 bg-white/4 hover:border-white/25 cursor-pointer'
+          }`}
+        >
+          <BinocularsIcon className="w-5 h-5 shrink-0 text-white/50" />
+          <div className="flex-1">
+            <span className="font-bold text-sm text-white/60">Spectator</span>
+            <p className="text-xs text-white/30">Watch the game without playing</p>
+          </div>
+          {amSpectator && (
+            <span className="text-[10px] bg-white/15 rounded-md px-1.5 py-0.5 text-white/70 font-semibold">YOU</span>
+          )}
+        </motion.button>
 
         {/* Player list */}
         <div className="bg-white/5 border border-white/8 rounded-xl p-4 mb-5">
@@ -155,14 +184,14 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
                   exit={{ scale: 0, opacity: 0 }}
                   className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
                   style={{
-                    background: p.team === 'blue' ? 'rgba(0,142,224,0.2)' : 'rgba(255,82,65,0.2)',
-                    color: p.team === 'blue' ? '#52b7ff' : '#ff8370',
+                    background: p.role === 'spectator' ? 'rgba(255,255,255,0.08)' : p.team === 'blue' ? 'rgba(0,142,224,0.2)' : 'rgba(255,82,65,0.2)',
+                    color: p.role === 'spectator' ? 'rgba(255,255,255,0.4)' : p.team === 'blue' ? '#52b7ff' : '#ff8370',
                     outline: p.userId === myUserId ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
                   }}
                 >
                   <span>{p.username}</span>
                   <span className="text-[9px] font-bold uppercase opacity-50 tracking-wide">
-                    {p.role === 'spymaster' ? 'SPY' : 'OP'}
+                    {p.role === 'spymaster' ? 'SPY' : p.role === 'spectator' ? 'SPEC' : 'OP'}
                   </span>
                   {p.userId === myUserId && (
                     <span className="text-[9px] bg-white/15 rounded px-1 text-white/50">YOU</span>
@@ -198,7 +227,7 @@ export default function WaitingRoom({ roomCode, players, myUserId, isHost, onSet
               ? { background: 'linear-gradient(to bottom, #22c55e, #16a34a)', color: '#fff', boxShadow: '0 4px 24px rgba(34,197,94,0.3)' }
               : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.25)' }}
           >
-            {canStart ? 'Start Game' : 'Waiting for more players…'}
+            {canStart ? 'Start Game' : `Need ${2 - activePlayers.length} more player${2 - activePlayers.length !== 1 ? 's' : ''} to start`}
           </motion.button>
         ) : (
           <p className="text-center text-white/30 text-sm">Waiting for host to start…</p>

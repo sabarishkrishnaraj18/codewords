@@ -1,5 +1,5 @@
 export type Team = 'blue' | 'red'
-export type Role = 'spymaster' | 'operative'
+export type Role = 'spymaster' | 'operative' | 'spectator'
 export type CardColor = 'blue' | 'red' | 'neutral' | 'assassin' | 'unknown'
 export type GameStatus = 'lobby' | 'active' | 'finished'
 export type WordMode = 'standard' | 'mix' | 'custom'
