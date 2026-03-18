@@ -22,7 +22,7 @@ export function useUserStats(userId: string | null, isGuest: boolean) {
       .from('user_game_scores')
       .select('score, won')
       .eq('user_id', userId)
-      .then(({ data }) => {
+      .then(({ data }: { data: Array<{ score: number | null; won: boolean | null }> | null }) => {
         if (data) {
           setStats({
             totalScore: data.reduce((sum, r) => sum + (r.score ?? 0), 0),

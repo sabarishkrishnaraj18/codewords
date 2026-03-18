@@ -1,12 +1,22 @@
 'use client'
 import { createBrowserClient } from '@supabase/ssr'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const buildTimeUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const buildTimeKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey)
+export let isSupabaseConfigured = !!(buildTimeUrl && buildTimeKey)
+
+let _client: ReturnType<typeof createBrowserClient> | null = null
+if (buildTimeUrl && buildTimeKey) {
+  _client = createBrowserClient(buildTimeUrl, buildTimeKey)
+}
+
+export function initSupabaseFromConfig(url: string, key: string) {
+  if (!url || !key) return
+  isSupabaseConfigured = true
+  _client = createBrowserClient(url, key)
+}
 
 export function createClient() {
-  if (!isSupabaseConfigured) return null
-  return createBrowserClient(supabaseUrl!, supabaseAnonKey!)
+  return _client
 }
