@@ -26,11 +26,15 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
+  // Track in React state so UI re-renders if it changes after async init
   const [isSupabaseEnabled, setIsSupabaseEnabled] = useState(isSupabaseConfigured)
 
   useEffect(() => {
+    let unsubscribe: (() => void) | undefined
+
     async function init() {
-      // If build-time vars weren't baked in, fetch from server-side API route (reads runtime env)
+      // If window globals weren't available at module load time (rare edge case),
+      // fall back to fetching /api/config which reads Railway runtime env vars
       if (!isSupabaseConfigured) {
         try {
           const res = await fetch('/api/config')
@@ -40,20 +44,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setIsSupabaseEnabled(true)
           }
         } catch {
-          // Network error or misconfigured — fall through to guest mode
+          // Network error — fall through to guest mode
         }
       }
 
       const supabase = createClient()
 
       if (!supabase) {
-        // Pure guest mode
         setUser({ id: getGuestUserId(), username: getSavedUsername(), isGuest: true })
         setLoading(false)
         return
       }
 
-      // Supabase mode — check for existing session
+      // Supabase available — check for existing session
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         const username = session.user.user_metadata?.username || getSavedUsername() || session.user.email?.split('@')[0] || 'Player'
@@ -73,11 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser({ id: getGuestUserId(), username: getSavedUsername(), isGuest: true })
         }
       })
-
-      return () => subscription.unsubscribe()
+      unsubscribe = () => subscription.unsubscribe()
     }
 
     init()
+    return () => { unsubscribe?.() }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const signIn = useCallback(async (email: string, password: string): Promise<string | null> => {
